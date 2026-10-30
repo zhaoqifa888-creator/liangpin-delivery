@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>良品数字工具交付页</title>
+  <style>
+    :root { --ink:#182421; --muted:#66736f; --line:#dce4e1; --primary:#123b4a; --accent:#c47a2c; --canvas:#f3f6f4; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; color:var(--ink); background:radial-gradient(circle at 10% 0%,rgba(196,122,44,.12),transparent 25rem),var(--canvas); font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif; line-height:1.6; }
+    .wrap { width:min(980px,calc(100% - 32px)); margin:0 auto; padding:34px 0 48px; }
+    .brand { display:flex; align-items:center; gap:12px; margin-bottom:42px; }
+    .mark { display:grid; place-items:center; width:44px; height:44px; border-radius:13px; background:var(--primary); color:white; font-weight:800; }
+    .brand strong { display:block; font-size:16px; }
+    .brand span { color:var(--muted); font-size:11px; }
+    .eyebrow { color:var(--accent); font-size:11px; font-weight:800; letter-spacing:.12em; }
+    h1 { max-width:720px; margin:8px 0 14px; font-size:clamp(32px,6vw,54px); line-height:1.08; letter-spacing:-.05em; }
+    .lead { max-width:650px; color:var(--muted); font-size:14px; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:34px; }
+    .card { border:1px solid var(--line); border-radius:22px; background:rgba(255,255,255,.9); padding:26px; box-shadow:0 18px 50px rgba(18,59,74,.06); }
+    .card:first-child { background:var(--primary); color:white; border-color:var(--primary); }
+    .tag { display:inline-block; border-radius:99px; background:var(--primary-soft,#e4efee); color:var(--primary); padding:4px 9px; font-size:10px; font-weight:700; }
+    .card:first-child .tag { background:rgba(255,255,255,.11); color:#f1bd7e; }
+    h2 { margin:18px 0 8px; font-size:23px; letter-spacing:-.03em; }
+    .card p { color:var(--muted); font-size:12px; min-height:58px; }
+    .card:first-child p { color:rgba(255,255,255,.68); }
+    .btn { display:inline-flex; align-items:center; justify-content:center; min-height:42px; padding:0 16px; border-radius:11px; background:white; color:var(--primary); font-size:12px; font-weight:750; text-decoration:none; }
+    .card:first-child .btn { background:#f2d4a8; color:var(--primary); }
+    .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:18px; }
+    .step { border-top:1px solid var(--line); padding-top:14px; color:var(--muted); font-size:11px; }
+    .step strong { display:block; margin-bottom:5px; color:var(--ink); font-size:12px; }
+    .note { margin-top:28px; padding:16px 18px; border-radius:14px; background:white; border:1px solid var(--line); color:var(--muted); font-size:10px; }
+    footer { margin-top:34px; color:var(--muted); font-size:10px; display:flex; justify-content:space-between; gap:20px; }
+    @media (max-width:720px) { .grid,.steps { grid-template-columns:1fr; } footer { flex-direction:column; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="brand">
+      <div class="mark">良</div>
+      <div><strong>良品数字工具</strong><span>制造业质量岗位的实用工具</span></div>
+    </div>
+    <div class="eyebrow">DELIVERY PAGE</div>
+    <h1>感谢购买，工具在这里。</h1>
+    <p class="lead">请根据订单内容下载对应工具。下载后需要输入卖家通过闲鱼订单消息发送的“解压密码”。建议优先使用电脑下载、解压并测试；如未收到密码、链接失效或文件无法打开，请回到闲鱼订单消息联系补发。</p>
+
+    <section class="grid">
+      <article class="card">
+        <span class="tag">Excel 工具箱 · 加密包</span>
+        <h2>质量工程师 Excel 工具箱</h2>
+        <p>CPK、MSA GRR、8D、PFMEA、控制计划与总览，一共 7 个工作表，带示例数据和自动计算。</p>
+        <a class="btn" href="assets/质量工程师Excel工具箱_2026版.zip" download>下载 ZIP</a>
+      </article>
+      <article class="card">
+        <span class="tag">离线生成器 · 加密包</span>
+        <h2>8D 报告生成器</h2>
+        <p>D1-D8 结构化填写、5 Whys、实时预览、自动保存、打印 PDF 和 JSON 备份。</p>
+        <a class="btn" href="assets/8D报告生成器_2026版.zip" download>下载 ZIP</a>
+      </article>
+    </section>
+
+    <section class="steps">
+      <div class="step"><strong>1. 下载</strong>建议用电脑浏览器下载 ZIP。</div>
+      <div class="step"><strong>2. 解压</strong>输入闲鱼订单消息中的解压密码，再打开文件。</div>
+      <div class="step"><strong>3. 售后</strong>未收到密码、链接失效或文件异常，请回到闲鱼订单消息联系。</div>
+    </section>
+
+    <div class="note">虚拟资料仅限购买者个人或所在企业用于内部工作，请勿转售、公开传播或用于虚假报告。质量工具用于数据整理与内部沟通，正式提交前请按客户规范、公司程序和适用标准复核。</div>
+    <footer><span>良品数字工具 · 2026</span><span>下载即表示同意仅作个人/企业内部使用</span></footer>
+  </main>
+</body>
+</html>
