@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>AI 办公提效工具箱 · 离线版</title>
+  <style>
+    :root { --ink:#192522; --muted:#697773; --line:#dce5e2; --canvas:#f2f6f4; --paper:#fff; --primary:#153e47; --primary2:#275f66; --soft:#e5f0ee; --accent:#c47a2c; --accent-soft:#f9e9d4; --green:#287452; --shadow:0 18px 55px rgba(18,59,74,.09); }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; color:var(--ink); background:radial-gradient(circle at 8% 0%,rgba(196,122,44,.11),transparent 25rem),var(--canvas); font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif; line-height:1.55; }
+    button,input,textarea,select { font:inherit; }
+    .shell { width:min(1400px,calc(100% - 32px)); margin:0 auto; padding:18px 0 36px; }
+    .top { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:10px 4px 18px; }
+    .brand { display:flex; align-items:center; gap:12px; }
+    .mark { display:grid; place-items:center; width:44px; height:44px; border-radius:13px; background:var(--primary); color:white; font-weight:800; }
+    .brand strong { display:block; font-size:16px; }
+    .brand span { color:var(--muted); font-size:10px; }
+    .tag { border:1px solid var(--line); border-radius:999px; padding:7px 11px; color:var(--muted); background:rgba(255,255,255,.7); font-size:10px; }
+    .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+    .step { border:1px solid var(--line); border-radius:14px; background:rgba(255,255,255,.75); padding:13px 15px; color:var(--muted); font-size:11px; }
+    .step strong { display:block; color:var(--primary); font-size:12px; margin-bottom:3px; }
+    .workspace { display:grid; grid-template-columns:330px minmax(0,1fr); min-height:calc(100vh - 210px); border:1px solid var(--line); border-radius:22px; overflow:hidden; box-shadow:var(--shadow); background:var(--paper); }
+    .sidebar { padding:18px; border-right:1px solid var(--line); background:#f8fbfa; }
+    .search { width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 11px; outline:none; background:white; font-size:12px; }
+    .search:focus { border-color:rgba(21,62,71,.5); box-shadow:0 0 0 3px rgba(21,62,71,.06); }
+    .categories { display:flex; gap:6px; flex-wrap:wrap; margin:13px 0; }
+    .category { border:0; border-radius:999px; background:#eaf1ef; color:var(--muted); padding:6px 9px; font-size:10px; cursor:pointer; }
+    .category.active { background:var(--primary); color:white; }
+    .task-list { display:flex; flex-direction:column; gap:6px; max-height:calc(100vh - 330px); overflow:auto; padding-right:3px; }
+    .task { border:1px solid transparent; border-radius:11px; background:transparent; text-align:left; padding:10px 11px; cursor:pointer; color:var(--ink); }
+    .task:hover { background:white; border-color:var(--line); }
+    .task.active { background:white; border-color:#b9cbc6; box-shadow:0 5px 16px rgba(18,59,74,.05); }
+    .task strong { display:block; font-size:11px; }
+    .task span { display:block; color:var(--muted); font-size:9px; margin-top:2px; }
+    .editor { padding:28px 30px 32px; background:white; overflow:auto; }
+    .editor-head { display:flex; justify-content:space-between; gap:18px; align-items:flex-start; padding-bottom:19px; border-bottom:1px solid var(--line); }
+    .kicker { color:var(--accent); font-size:10px; font-weight:800; letter-spacing:.09em; }
+    h1 { margin:5px 0 6px; font-size:28px; letter-spacing:-.04em; }
+    .desc { color:var(--muted); font-size:11px; margin:0; max-width:680px; }
+    .task-badge { flex:0 0 auto; border-radius:999px; background:var(--accent-soft); color:#7b521f; padding:6px 10px; font-size:10px; }
+    .form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin:22px 0; }
+    .field { display:flex; flex-direction:column; gap:6px; }
+    .field.full { grid-column:1/-1; }
+    .field label { color:#43524e; font-size:10px; font-weight:650; }
+    .field input,.field textarea,.field select { width:100%; border:1px solid var(--line); border-radius:9px; background:#fbfdfc; padding:9px 10px; outline:none; color:var(--ink); font-size:11px; }
+    .field textarea { min-height:70px; resize:vertical; line-height:1.6; }
+    .field input:focus,.field textarea:focus,.field select:focus { border-color:rgba(21,62,71,.5); background:white; box-shadow:0 0 0 3px rgba(21,62,71,.06); }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+    .btn { border:1px solid var(--line); border-radius:10px; background:white; color:var(--primary); padding:9px 13px; font-size:11px; font-weight:700; cursor:pointer; }
+    .btn:hover { border-color:#b7c8c3; }
+    .btn.primary { background:var(--primary); border-color:var(--primary); color:white; }
+    .btn.soft { background:var(--soft); border-color:transparent; }
+    .prompt-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:24px 0 9px; }
+    .prompt-head h2 { margin:0; font-size:16px; }
+    .prompt-head span { color:var(--muted); font-size:9px; }
+    .prompt { white-space:pre-wrap; overflow-wrap:anywhere; border:1px solid var(--line); border-radius:12px; background:#f8fbfa; padding:16px; min-height:235px; color:#33413e; font-size:11px; line-height:1.75; }
+    .tip { margin-top:13px; padding:12px 14px; border-radius:10px; background:var(--accent-soft); color:#725022; font-size:10px; }
+    .footer { padding:16px 4px 0; text-align:center; color:var(--muted); font-size:9px; }
+    .toast { position:fixed; left:50%; bottom:22px; transform:translate(-50%,15px); opacity:0; pointer-events:none; background:#172422; color:white; border-radius:999px; padding:9px 15px; font-size:11px; transition:.18s ease; z-index:20; }
+    .toast.show { opacity:1; transform:translate(-50%,0); }
+    @media (max-width:900px) { .workspace { grid-template-columns:1fr; } .sidebar { border-right:0; border-bottom:1px solid var(--line); } .task-list { max-height:240px; } .editor { padding:22px 18px; } }
+    @media (max-width:620px) { .shell { width:min(100% - 20px,1400px); } .top { align-items:flex-start; flex-direction:column; } .steps,.form-grid { grid-template-columns:1fr; } .field.full { grid-column:auto; } .editor-head { flex-direction:column; } }
+
+    .access-gate { position:fixed; inset:0; z-index:999; display:grid; place-items:center; padding:20px; background:rgba(18,42,47,.96); color:#fff; font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+    .access-gate.hidden { display:none; }
+    .access-card { width:min(430px,100%); border:1px solid rgba(255,255,255,.15); border-radius:20px; background:#153e47; padding:26px; box-shadow:0 24px 70px rgba(0,0,0,.28); }
+    .access-card .mini { color:#f1bd7e; font-size:10px; font-weight:800; letter-spacing:.12em; }
+    .access-card h2 { margin:9px 0 8px; font-size:24px; color:#fff; }
+    .access-card p { color:rgba(255,255,255,.68); font-size:11px; margin:0 0 16px; }
+    .access-card input { width:100%; padding:11px 12px; border:1px solid rgba(255,255,255,.2); border-radius:10px; background:#fff; color:#192522; outline:none; font-size:13px; }
+    .access-card button { width:100%; margin-top:10px; padding:11px; border:0; border-radius:10px; background:#f0d2a5; color:#153e47; font-weight:800; cursor:pointer; }
+    .access-error { min-height:16px; margin-top:8px; color:#ffb4aa; font-size:10px; }
+  </style>
+</head>
+<body>
+  <div class="access-gate" id="access-gate">
+    <div class="access-card">
+      <div class="mini">AI OFFICE TOOLKIT · MOBILE</div>
+      <h2>手机在线版</h2>
+      <p>请输入闲鱼订单消息里的解压密码。密码只用于本次解锁，不会上传。</p>
+      <input id="access-password" type="password" placeholder="输入访问密码" autocomplete="off" />
+      <button id="access-submit" type="button">进入工具箱</button>
+      <div class="access-error" id="access-error"></div>
+    </div>
+  </div>
+
+  <div class="shell">
+    <header class="top">
+      <div class="brand">
+        <div class="mark">AI</div>
+        <div><strong>AI 办公提效工具箱</strong><span>选场景 · 填信息 · 复制给任意 AI</span></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a class="tag" href="Tutorial_CN.html" target="_blank" style="text-decoration:none;color:var(--accent)">新手教程</a>
+        <span class="tag">离线 HTML · 不需要安装</span>
+      </div>
+    </header>
+    <section class="steps">
+      <div class="step"><strong>1. 选任务</strong>从左边选一个你现在要做的办公任务。</div>
+      <div class="step"><strong>2. 填信息</strong>只填你知道的内容，不知道的可以留空。</div>
+      <div class="step"><strong>3. 复制提示词</strong>把生成内容粘贴到 DeepSeek、豆包、ChatGPT 或通义。</div>
+    </section>
+    <main class="workspace">
+      <aside class="sidebar">
+        <input class="search" id="search" placeholder="搜索：周报、文案、简历、客服…" />
+        <div class="categories" id="categories"></div>
+        <div class="task-list" id="task-list"></div>
+      </aside>
+      <section class="editor">
+        <div class="editor-head">
+          <div><div class="kicker" id="task-category">办公文档</div><h1 id="task-title">任务标题</h1><p class="desc" id="task-desc"></p></div>
+          <span class="task-badge" id="task-badge">模板</span>
+        </div>
+        <div class="form-grid" id="field-grid"></div>
+        <div class="actions">
+          <button class="btn primary" id="copy-prompt" type="button">复制提示词</button>
+          <button class="btn soft" id="clear-fields" type="button">清空填写</button>
+          <button class="btn" id="random-task" type="button">换一个任务</button>
+        </div>
+        <div class="prompt-head"><h2>生成结果</h2><span>可直接复制到任意 AI</span></div>
+        <div class="prompt" id="prompt-output"></div>
+        <div class="tip" id="task-tip"></div>
+      </section>
+    </main>
+    <footer class="footer">本工具只负责生成提示词，不包含 AI 账号、API Key 或第三方服务。AI 输出请人工复核，不要直接提交未经核对的数字、合同或客户承诺。</footer>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script>
+    const CATEGORIES = ['全部','文案表达','办公文档','表格数据','电商运营','客服沟通','求职效率','内容创作'];
+    const TASKS = [
+      {cat:'文案表达',title:'小红书标题',desc:'把产品、经历或知识点变成更像真人分享的标题。',badge:'10个标题',tip:'标题不要夸大功效，不要写保证收益、绝对化承诺。',
+        fields:[['topic','主题/产品','例如：通勤咖啡杯'],['audience','目标读者','例如：上班族女生'],['tone','语气','例如：真诚、轻松、不要广告腔']],
+        prompt:'请扮演一名小红书内容编辑。主题：{{topic}}。目标读者：{{audience}}。语气：{{tone}}。\n请给出10个标题，分为痛点型、反常识型、清单型、身份型、避坑型。每个标题不超过22个字。不要夸大功效，不要编造个人经历，不要使用绝对化承诺。'},
+      {cat:'文案表达',title:'朋友圈文案',desc:'把一件事写得自然、有信息量，不像硬广。',badge:'3版',tip:'保留真实信息，不要虚构客户评价。',
+        fields:[['event','要分享的事情','例如：新做了一个Excel库存模板'],['goal','目的','例如：让人私信了解'],['style','希望的语气','例如：真诚、简短、专业']],
+        prompt:'请帮我写3版朋友圈文案。事情：{{event}}。目的：{{goal}}。语气：{{style}}。每版不超过180字，开头不要用“家人们”，不要制造焦虑，不要虚构客户评价。最后给出一个自然的行动建议。'},
+      {cat:'文案表达',title:'商品卖点提炼',desc:'把产品信息变成买家能看懂的卖点。',badge:'结构化',tip:'没有依据的卖点不要写。',
+        fields:[['product','商品信息','粘贴商品名称、规格、材质、功能'],['customer','买家','例如：小店主、宝妈、上班族'],['advantage','真实优势','只写你有证据的优势']],
+        prompt:'请根据以下信息提炼商品卖点。商品：{{product}}。目标买家：{{customer}}。真实优势：{{advantage}}。请输出：1）一句话核心卖点；2）5个短卖点；3）适合谁/不适合谁；4）3个买家可能问的问题。不得添加没有依据的功能、销量或评价。'},
+      {cat:'文案表达',title:'短视频口播稿',desc:'把主题写成30–60秒可以照读的口播。',badge:'30–60秒',tip:'不要承诺收益，不使用夸张绝对化词语。',
+        fields:[['topic','主题','例如：小店怎么避免库存积压'],['viewer','观众','例如：开小店的老板'],['point','必须讲到的点','例如：安全库存、每周盘点']],
+        prompt:'请写一篇30–60秒的口播稿。主题：{{topic}}。观众：{{viewer}}。必须包含：{{point}}。结构：3秒钩子 → 问题 → 3个具体动作 → 结尾总结。语言口语化，不要念PPT，不要夸大，不要保证效果。'},
+      {cat:'文案表达',title:'邮件润色',desc:'把生硬邮件改得清晰、礼貌、可直接发送。',badge:'礼貌版',tip:'保留原意，不要擅自增加承诺。',
+        fields:[['email','原邮件','粘贴原文'],['recipient','收件人','例如：客户、领导、供应商'],['tone','语气','例如：礼貌、直接、坚定']],
+        prompt:'请润色下面这封邮件。收件人：{{recipient}}。语气：{{tone}}。原文：{{email}}。要求：保留原意，结构清晰，礼貌但不卑微，不擅自增加时间、价格或服务承诺。输出润色版，并列出你改动的地方。'},
+      {cat:'办公文档',title:'周报生成',desc:'把零散工作记录整理成有结果的周报。',badge:'结构模板',tip:'数据和结果必须由你提供，AI不能编造。',
+        fields:[['work','本周事项','每行一项'],['result','结果/数据','例如：完成8家客户回访'],['next','下周计划','列3–5项']],
+        prompt:'请把下面的工作记录整理成一份周报。本周事项：{{work}}。结果或数据：{{result}}。下周计划：{{next}}。格式：本周完成、关键结果、问题与风险、下周计划、需要支持。不要编造任何数据；没有数据就写“暂无数据”。'},
+      {cat:'办公文档',title:'会议纪要整理',desc:'从会议记录中提取结论、行动项和负责人。',badge:'行动清单',tip:'不确定的负责人不要猜。',
+        fields:[['notes','会议记录','粘贴原始记录'],['goal','会议目标','例如：确定上线时间']],
+        prompt:'请根据会议记录整理纪要。会议目标：{{goal}}。原始记录：{{notes}}。输出：1）一句话结论；2）已确认事项；3）待定事项；4）行动项表格（事项/负责人/截止日期/状态）；5）风险。没有明确负责人的写“待确认”，不要猜测。'},
+      {cat:'办公文档',title:'项目计划',desc:'把目标拆成阶段、任务、负责人和风险。',badge:'计划表',tip:'日期和资源需要真实输入。',
+        fields:[['project','项目名称','例如：官网改版'],['goal','目标','可衡量的目标'],['deadline','截止时间','例如：11月30日'],['resource','现有资源','人、预算、工具']],
+        prompt:'请制定项目计划。项目：{{project}}。目标：{{goal}}。截止时间：{{deadline}}。资源：{{resource}}。输出：阶段拆分、任务清单、建议负责人、交付物、风险、验收标准。不要编造资源；缺少信息时列出需要确认的问题。'},
+      {cat:'办公文档',title:'通知公告',desc:'把安排写成清楚、正式、不引起误解的通知。',badge:'正式版',tip:'时间、地点、对象要准确。',
+        fields:[['event','事项','例如：办公室搬迁'],['time','时间','具体日期和时间'],['people','对象','例如：全体员工'],['note','注意事项','需要强调的内容']],
+        prompt:'请写一则内部通知。事项：{{event}}。时间：{{time}}。对象：{{people}}。注意事项：{{note}}。要求：标题、正文、时间地点、需要做什么、联系人、截止时间。语言简洁正式，不要编造联系人信息。'},
+      {cat:'办公文档',title:'工作总结',desc:'把工作内容整理成有逻辑、有结果的总结。',badge:'汇报版',tip:'不要把苦劳写成成果，数据要真实。',
+        fields:[['role','岗位','例如：电商运营'],['period','周期','例如：2026年10月'],['work','完成事项','逐项说明'],['data','数据/结果','有就填，没有写暂无']],
+        prompt:'请写一份工作总结。岗位：{{role}}。周期：{{period}}。完成事项：{{work}}。数据结果：{{data}}。结构：目标回顾、完成情况、关键结果、问题复盘、下阶段计划。不要编造数据或夸大成果，未知信息标记为“待补充”。'},
+      {cat:'办公文档',title:'SOP流程',desc:'把一个重复操作写成别人能照着做的步骤。',badge:'可执行',tip:'每一步最好有输入、动作、输出。',
+        fields:[['process','流程名称','例如：客户退款处理'],['owner','执行人','岗位或角色'],['steps','现有步骤','按你实际做法写'],['standard','验收标准','做到什么程度算完成']],
+        prompt:'请把以下工作整理成SOP。流程：{{process}}。执行人：{{owner}}。现有步骤：{{steps}}。验收标准：{{standard}}。输出：目的、适用范围、角色、前置条件、分步操作、异常处理、验收标准、留痕记录。不要添加公司没有的审批权限。'},
+      {cat:'表格数据',title:'Excel公式求助',desc:'用中文描述需求，让AI给出可验证的Excel公式。',badge:'公式',tip:'让AI解释公式，先在副本测试。',
+        fields:[['version','Excel/WPS版本','例如：WPS 2026'],['sheet','表格结构','列名、数据范围、示例'],['goal','想实现什么','例如：按SKU汇总入库减出库']],
+        prompt:'请帮我写一个Excel公式。软件版本：{{version}}。表格结构：{{sheet}}。目标：{{goal}}。请先列出列名和范围，再给出公式，并逐段解释；最后给一个两行数据的验证示例。不要假设不存在的工作表或列。'},
+      {cat:'表格数据',title:'数据清洗规则',desc:'把混乱表格整理成可分析的结构。',badge:'清洗清单',tip:'不要上传隐私数据。',
+        fields:[['columns','字段列表','例如：日期、客户、金额、备注'],['problems','当前问题','例如：日期格式混乱、重复订单'],['goal','最终用途','例如：做月度销售汇总']],
+        prompt:'请为我的表格设计数据清洗方案。字段：{{columns}}。当前问题：{{problems}}。最终用途：{{goal}}。输出：1）清洗规则；2）需要新增的辅助列；3）可用的Excel公式；4）异常数据检查清单；5）建议保留哪些原始字段。不要要求提供隐私数据。'},
+      {cat:'表格数据',title:'数据分析思路',desc:'先让AI给分析框架，再由你核对数据。',badge:'分析框架',tip:'AI不能替代业务判断。',
+        fields:[['topic','分析主题','例如：门店销售额下降'],['data','可用数据','例如：近6个月销售额、客单价、订单量'],['decision','要做什么决定','例如：是否增加促销']],
+        prompt:'请为以下分析设计思路。主题：{{topic}}。可用数据：{{data}}。要支持的决策：{{decision}}。输出：核心问题、指标拆解、对比维度、图表建议、可能原因、需要验证的数据、结论模板。不要编造数据，不要把相关性直接写成因果。'},
+      {cat:'表格数据',title:'图表建议',desc:'根据数据类型选择合适的图表。',badge:'图表',tip:'不要用饼图表达太多类别。',
+        fields:[['data','数据和字段','列名、单位、时间范围'],['message','想说明什么','例如：哪个产品贡献最大'],['audience','给谁看','例如：老板、客户']],
+        prompt:'请根据以下数据推荐图表。数据结构：{{data}}。想说明：{{message}}。受众：{{audience}}。请推荐最多3种图表，分别说明：为什么适合、横轴/纵轴怎么放、需要注意什么、标题怎么写。不要建议3D或误导性坐标轴。'},
+      {cat:'电商运营',title:'商品标题',desc:'把商品信息变成有搜索词、有卖点的标题。',badge:'多版本',tip:'不要堆无关热词。',
+        fields:[['product','商品','名称、规格、材质'],['audience','买家','例如：学生、宝妈、店主'],['keywords','关键词','你可以提供的真实搜索词']],
+        prompt:'请为商品写5个标题。商品：{{product}}。买家：{{audience}}。可用关键词：{{keywords}}。每个标题不超过30个字，包含真实属性、使用场景和买家需求。不要堆砌无关热词，不要写虚假销量、官方认证或绝对化承诺。'},
+      {cat:'电商运营',title:'详情页结构',desc:'把参数和卖点组织成买家看得懂的详情页。',badge:'详情框架',tip:'不夸大，不虚构材质和功能。',
+        fields:[['product','商品信息','名称、参数、材质、尺寸'],['pain','买家痛点','例如：不好收纳、容易坏'],['proof','真实证明','测试、实拍、售后政策']],
+        prompt:'请写一份商品详情页结构。商品：{{product}}。买家痛点：{{pain}}。真实证明：{{proof}}。输出：首屏卖点、使用场景、参数表、细节说明、适合/不适合、购买须知、常见问题。不要虚构检测报告、销量和用户评价。'},
+      {cat:'电商运营',title:'买家评价回复',desc:'对不同评价给出得体回复。',badge:'多场景',tip:'涉及退款和事实争议时不要自动承诺。',
+        fields:[['product','商品','商品名称'],['review','买家评价','粘贴评价内容'],['policy','售后政策','例如：7天无理由/不退换']],
+        prompt:'请为这条评价写3种回复。商品：{{product}}。评价：{{review}}。售后政策：{{policy}}。分别对应：礼貌解释、解决问题、邀请补充信息。不要争辩，不要透露买家隐私，不要承诺政策以外的退款或赔偿。'},
+      {cat:'电商运营',title:'活动方案',desc:'把一个促销目标拆成活动机制和执行清单。',badge:'活动草案',tip:'价格和优惠必须经过成本核算。',
+        fields:[['goal','活动目标','例如：清理库存'],['product','商品/客群','活动商品和目标客户'],['budget','预算/资源','可投入的预算和人力']],
+        prompt:'请设计一个轻量活动方案。目标：{{goal}}。商品/客群：{{product}}。预算/资源：{{budget}}。输出：活动主题、机制、时间线、渠道、物料清单、执行分工、风险、复盘指标。不要建议虚假折扣、刷单或诱导好评。'},
+      {cat:'客服沟通',title:'客户询价回复',desc:'回答价格问题时既清楚又不掉价。',badge:'话术',tip:'不要在自动回复里承诺未确认的折扣。',
+        fields:[['product','商品/服务','客户问的是什么'],['price','价格信息','可以公开的价格或范围'],['question','客户原话','粘贴问题']],
+        prompt:'请帮我回复客户询价。商品/服务：{{product}}。价格信息：{{price}}。客户问题：{{question}}。输出：先回应问题 → 说明价格包含什么 → 说明不包含什么 → 邀请客户补充需求 → 自然的下一步。不要使用强迫成交话术。'},
+      {cat:'客服沟通',title:'催款提醒',desc:'礼貌但明确地提醒对方付款。',badge:'商务版',tip:'金额和期限必须真实。',
+        fields:[['client','对方','客户/合作方'],['amount','金额','真实金额'],['due','约定时间','付款截止时间'],['relation','关系','首次合作/长期客户']],
+        prompt:'请帮我写一条催款消息。对方：{{client}}。金额：{{amount}}。约定付款时间：{{due}}。关系：{{relation}}。语气礼貌、明确、不威胁，说明金额、期限和下一步，保留沟通记录。不要编造合同条款。'},
+      {cat:'客服沟通',title:'道歉回复',desc:'在出现失误时承认问题、给出行动，不甩锅。',badge:'危机沟通',tip:'事实未查清前不要承认不存在的责任。',
+        fields:[['issue','发生了什么事','只写已确认事实'],['impact','影响','对客户的影响'],['action','已采取/准备采取的行动','真实措施'],['compensation','补偿方案','没有就写暂未确定']],
+        prompt:'请写一份客户道歉回复。已确认事实：{{issue}}。影响：{{impact}}。行动：{{action}}。补偿方案：{{compensation}}。结构：承认事实 → 表达理解 → 说明原因但不甩锅 → 已采取措施 → 后续时间点 → 需要客户提供的信息。不要过度承诺，不要编造调查结果。'},
+      {cat:'客服沟通',title:'拒绝不合理要求',desc:'明确边界，同时保留继续合作的空间。',badge:'边界版',tip:'不要使用攻击性语言。',
+        fields:[['request','对方要求','具体请求'],['reason','不能答应的原因','真实原因'],['alternative','可选替代','能提供的替代方案']],
+        prompt:'请帮我拒绝一个不合理要求。要求：{{request}}。不能答应的原因：{{reason}}。可提供的替代：{{alternative}}。要求：表达理解、明确拒绝、解释边界、给出替代方案、保持专业。不要含糊承诺。'},
+      {cat:'求职效率',title:'简历优化',desc:'把经历改成有动作、有结果、可核验的表达。',badge:'简历',tip:'不要编造指标和头衔。',
+        fields:[['job','目标岗位','例如：电商运营'],['experience','原始经历','粘贴你的真实经历'],['skills','真实技能','工具、方法、证书']],
+        prompt:'请帮我优化简历。目标岗位：{{job}}。原始经历：{{experience}}。真实技能：{{skills}}。输出：1）一段个人简介；2）每条经历改成“动作+对象+结果”的要点；3）技能栏；4）需要补充哪些证据。不要编造数字、头衔或项目。'},
+      {cat:'求职效率',title:'面试答案',desc:'把真实经历组织成STAR回答。',badge:'STAR',tip:'不要虚构冲突和成果。',
+        fields:[['question','面试问题','例如：讲一次你解决冲突的经历'],['experience','真实经历','背景、任务、行动、结果'],['job','目标岗位','例如：运营主管']],
+        prompt:'请帮我把真实经历整理成面试回答。面试问题：{{question}}。经历：{{experience}}。目标岗位：{{job}}。使用STAR结构，控制在2分钟内。不要编造冲突、数据或结果；最后列出面试官可能追问的3个问题。'},
+      {cat:'求职效率',title:'自我介绍',desc:'根据岗位生成口语化自我介绍。',badge:'口语版',tip:'只写真实经历。',
+        fields:[['job','目标岗位','岗位名称'],['years','经验/背景','真实年限或项目'],['strength','核心优势','有证据的优势'],['motivation','为什么应聘','真实动机']],
+        prompt:'请写一段求职自我介绍。岗位：{{job}}。背景：{{years}}。核心优势：{{strength}}。动机：{{motivation}}。控制在60–90秒，结构：我是谁 → 我做过什么 → 我能带来什么 → 为什么是这个岗位。不要夸张，不要使用空泛形容词。'},
+      {cat:'求职效率',title:'职业规划',desc:'把现状和目标拆成可执行的小步骤。',badge:'行动路线',tip:'AI不能替代个人选择。',
+        fields:[['current','当前情况','岗位、技能、资源'],['target','目标','例如：转岗做产品经理'],['time','希望时间','例如：12个月']],
+        prompt:'请帮我做职业规划。当前情况：{{current}}。目标：{{target}}。希望时间：{{time}}。输出：差距分析、3个阶段目标、每阶段要完成的作品/项目、需要补的技能、每月检查指标。不要承诺一定能转岗或涨薪。'},
+      {cat:'内容创作',title:'选题清单',desc:'围绕一个垂直主题生成可持续选题。',badge:'30个',tip:'不要蹭灾难、疾病或隐私话题。',
+        fields:[['niche','赛道','例如：小店经营'],['audience','受众','例如：个体户老板'],['platform','平台','小红书/视频号/抖音']],
+        prompt:'请为以下账号生成30个选题。赛道：{{niche}}。受众：{{audience}}。平台：{{platform}}。按痛点、误区、清单、案例、对比、问答分类。每个选题给出标题和一个内容角度。不要使用灾难、疾病、隐私或虚假承诺作为钩子。'},
+      {cat:'内容创作',title:'短视频脚本',desc:'按镜头、台词和画面写一个可拍摄脚本。',badge:'分镜表',tip:'不要盗用他人脚本。',
+        fields:[['topic','主题','视频要讲什么'],['duration','时长','例如：45秒'],['style','形式','口播/剧情/图文']],
+        prompt:'请写一个短视频脚本。主题：{{topic}}。时长：{{duration}}。形式：{{style}}。输出表格：镜头号、时间、画面、台词/字幕、拍摄提示。开头3秒要有钩子，结尾给出一个自然行动建议。不要抄袭现有视频，不要夸大功效。'},
+      {cat:'内容创作',title:'公众号文章大纲',desc:'先把文章结构想清楚，再展开写正文。',badge:'大纲',tip:'引用和案例必须可核验。',
+        fields:[['topic','文章主题','要解决的问题'],['reader','读者','目标人群'],['goal','写作目的','例如：解释/说服/记录']],
+        prompt:'请写一篇公众号文章大纲。主题：{{topic}}。读者：{{reader}}。目的：{{goal}}。输出：标题3个、开头钩子、3–5个章节及每节要点、需要的数据/案例、结尾行动建议。不要编造数据或引用，无法核实的案例标注“待补证据”。'},
+      {cat:'表格数据',title:'自定义表格任务',desc:'把你的表格需求描述清楚，让AI给可执行方案。',badge:'自由模板',tip:'不要输入身份证、银行卡、客户隐私等敏感数据。',
+        fields:[['goal','你想完成什么','例如：把月度销售表按地区汇总'],['structure','表格结构','列名、行数、单位、示例'],['software','使用的软件','Excel/WPS/飞书表格']],
+        prompt:'请帮我完成一个表格任务。目标：{{goal}}。表格结构：{{structure}}。软件：{{software}}。请给出：步骤、公式/操作、验证方法、常见错误。缺少信息时先提问，不要假设列名或数据；不要要求我提供隐私数据。'},
+      {cat:'办公文档',title:'自定义办公任务',desc:'适合不在清单里的写作、整理、沟通任务。',badge:'自由模板',tip:'把背景、对象、目标说清楚，AI输出才稳定。',
+        fields:[['task','任务','你想让AI做什么'],['background','背景','相关事实和信息'],['output','希望输出','格式、长度、语气']],
+        prompt:'请完成以下任务：{{task}}。背景信息：{{background}}。期望输出：{{output}}。要求：先复述你理解的目标；信息不足时最多问3个澄清问题；不要编造事实、数据、引用或承诺；最后给出可执行的下一步。'},
+    ];
+    const el = id => document.getElementById(id);
+    let activeCategory='全部', activeTask=0, currentPrompt='';
+    function toast(text){const t=el('toast');t.textContent=text;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),1600);}
+    function filtered(){const q=el('search').value.trim().toLowerCase();return TASKS.map((t,i)=>({t,i})).filter(({t})=>(activeCategory==='全部'||t.cat===activeCategory)&&(!q||`${t.title}${t.desc}${t.cat}`.toLowerCase().includes(q)));}
+    function renderCategories(){el('categories').innerHTML=CATEGORIES.map(c=>`<button class="category ${c===activeCategory?'active':''}" data-cat="${c}">${c}</button>`).join('');document.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{activeCategory=b.dataset.cat;renderCategories();renderTasks();});}
+    function renderTasks(){const list=filtered();if(!list.length){el('task-list').innerHTML='<div style="padding:16px;color:#697773;font-size:11px">没有找到任务</div>';return;}if(!list.some(({i})=>i===activeTask))activeTask=list[0].i;el('task-list').innerHTML=list.map(({t,i})=>`<button class="task ${i===activeTask?'active':''}" data-task="${i}"><strong>${t.title}</strong><span>${t.cat} · ${t.badge}</span></button>`).join('');document.querySelectorAll('[data-task]').forEach(b=>b.onclick=()=>{activeTask=Number(b.dataset.task);renderTasks();renderTask();});}
+    function renderTask(){const t=TASKS[activeTask];el('task-category').textContent=t.cat;el('task-title').textContent=t.title;el('task-desc').textContent=t.desc;el('task-badge').textContent=t.badge;el('task-tip').textContent='提示：'+t.tip;el('field-grid').innerHTML=t.fields.map(([key,label,ph])=>`<div class="field ${t.fields.length<=2?'full':''}"><label>${label}</label>${label.includes('粘贴')||label.includes('记录')||label.includes('描述')||label.includes('信息')?`<textarea data-field="${key}" placeholder="${ph}"></textarea>`:`<input data-field="${key}" placeholder="${ph}" />`}</div>`).join('');const saved=JSON.parse(localStorage.getItem('ai-toolkit-'+activeTask)||'{}');document.querySelectorAll('[data-field]').forEach(f=>{f.value=saved[f.dataset.field]||'';f.oninput=()=>{const data={};document.querySelectorAll('[data-field]').forEach(x=>data[x.dataset.field]=x.value);localStorage.setItem('ai-toolkit-'+activeTask,JSON.stringify(data));generate();};});generate();}
+    function generate(){const t=TASKS[activeTask];let p=t.prompt;document.querySelectorAll('[data-field]').forEach(f=>{p=p.replaceAll('{{'+f.dataset.field+'}}',f.value.trim()||'（请补充）');});p+=`\n\n【输出要求】\n请用清晰的小标题和列表输出。信息不足时先问最多3个澄清问题，不要编造事实、数据、引用或承诺。完成后给出一个可执行的下一步。`;currentPrompt=p;el('prompt-output').textContent=p;}
+    async function copyPrompt(){try{await navigator.clipboard.writeText(currentPrompt);}catch{const a=document.createElement('textarea');a.value=currentPrompt;document.body.append(a);a.select();document.execCommand('copy');a.remove();}toast('提示词已复制');}
+    el('search').oninput=renderTasks;el('copy-prompt').onclick=copyPrompt;el('clear-fields').onclick=()=>{document.querySelectorAll('[data-field]').forEach(f=>f.value='');localStorage.removeItem('ai-toolkit-'+activeTask);generate();toast('已清空填写');};el('random-task').onclick=()=>{activeTask=Math.floor(Math.random()*TASKS.length);renderTasks();renderTask();};
+    renderCategories();renderTasks();renderTask();
+  </script>
+
+  <script>
+    (() => {
+      const gate = document.getElementById('access-gate');
+      const input = document.getElementById('access-password');
+      const button = document.getElementById('access-submit');
+      const error = document.getElementById('access-error');
+      const expected = 'da26e0a2a8b3269e9600c2de58bc5a08b70c09a53f6a9a52a8d63a1b808f370a';
+      function unlock() { gate.classList.add('hidden'); }
+      if (localStorage.getItem('ai-toolkit-mobile-unlocked') === 'yes') unlock();
+      async function sha256(text) {
+        const data = new TextEncoder().encode(text);
+        const hash = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+      async function submit() {
+        const value = input.value.trim();
+        if (!value) { error.textContent = '请输入密码'; return; }
+        try {
+          const hash = await sha256(value);
+          if (hash === expected) {
+            localStorage.setItem('ai-toolkit-mobile-unlocked', 'yes');
+            unlock();
+          } else {
+            error.textContent = '密码不正确，请查看闲鱼订单消息';
+          }
+        } catch {
+          error.textContent = '当前浏览器无法验证，请下载 ZIP 离线使用';
+        }
+      }
+      button.addEventListener('click', submit);
+      input.addEventListener('keydown', event => { if (event.key === 'Enter') submit(); });
+    })();
+  </script>
+</body>
+</html>

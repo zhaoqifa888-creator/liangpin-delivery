@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 办公提效工具箱 · 新手教程</title>
+  <style>
+    :root { --ink:#192522; --muted:#697773; --line:#dce5e2; --canvas:#f2f6f4; --primary:#153e47; --soft:#e5f0ee; --accent:#c47a2c; --accent-soft:#f9e9d4; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--canvas); font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif; line-height:1.7; }
+    .page { width:min(980px,calc(100% - 32px)); margin:0 auto; padding:34px 0 56px; }
+    .brand { display:flex; align-items:center; gap:12px; margin-bottom:34px; }
+    .mark { display:grid; place-items:center; width:46px; height:46px; border-radius:14px; background:var(--primary); color:white; font-weight:800; }
+    .brand strong { display:block; font-size:16px; }
+    .brand span { display:block; color:var(--muted); font-size:10px; }
+    .eyebrow { color:var(--accent); font-size:10px; font-weight:800; letter-spacing:.12em; }
+    h1 { margin:8px 0 10px; color:var(--primary); font-size:clamp(32px,5vw,50px); letter-spacing:-.05em; line-height:1.1; }
+    .lead { max-width:720px; color:var(--muted); font-size:13px; }
+    .card { margin-top:18px; border:1px solid var(--line); border-radius:20px; background:white; padding:26px; }
+    h2 { margin:0 0 15px; color:var(--primary); font-size:20px; letter-spacing:-.02em; }
+    h3 { margin:20px 0 7px; color:var(--primary); font-size:14px; }
+    p { margin:8px 0; }
+    .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:16px; }
+    .step { border-radius:14px; background:var(--soft); padding:16px; }
+    .step b { display:block; color:var(--accent); font-size:11px; margin-bottom:7px; }
+    .step strong { display:block; font-size:13px; }
+    .step span { display:block; color:var(--muted); font-size:10px; margin-top:5px; }
+    .shot { margin-top:18px; overflow:hidden; border-radius:15px; border:1px solid var(--line); background:#f8fbfa; }
+    .shot img { display:block; width:100%; height:auto; }
+    .caption { color:var(--muted); font-size:9px; text-align:center; padding:8px 12px; }
+    .example { border-top:1px solid var(--line); padding-top:20px; margin-top:20px; }
+    .example:first-of-type { border-top:0; padding-top:0; margin-top:0; }
+    .example-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .box { border:1px solid var(--line); border-radius:12px; padding:13px; background:#fbfdfc; font-size:11px; color:#394743; }
+    .box strong { display:block; margin-bottom:6px; color:var(--primary); }
+    .prompt { white-space:pre-wrap; background:var(--primary); color:#eef6f4; border-radius:12px; padding:16px; font-size:10px; line-height:1.7; margin-top:10px; }
+    .note { background:var(--accent-soft); border-radius:12px; padding:13px 15px; color:#725022; font-size:11px; margin-top:12px; }
+    .warn { background:#fbe9e6; color:#8e342f; }
+    .checklist { columns:2; column-gap:30px; padding-left:18px; font-size:11px; color:var(--muted); }
+    .checklist li { break-inside:avoid; margin-bottom:7px; }
+    .footer { margin-top:25px; text-align:center; color:var(--muted); font-size:9px; }
+    @media (max-width:720px) { .steps,.example-grid { grid-template-columns:1fr; } .checklist { columns:1; } .card { padding:20px; } }
+    @media print { body { background:white; } .page { width:auto; padding:0; } .card { break-inside:avoid; box-shadow:none; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="brand"><div class="mark">AI</div><div><strong>AI 办公提效工具箱</strong><span>新手图文教程 · 2026 版</span></div></div>
+    <div class="eyebrow">BEGINNER GUIDE</div>
+    <h1>看这一份，<br>就知道怎么用。</h1>
+    <p class="lead">这不是 AI 课程，也不自动替你操作 AI。它的作用是：把你不知道怎么写的需求，变成一段结构清楚的提示词。你把提示词复制到 DeepSeek、豆包、ChatGPT 或通义，就能得到更接近你要的结果。</p>
+
+    <section class="card">
+      <h2>先记住三步</h2>
+      <div class="steps">
+        <div class="step"><b>STEP 01</b><strong>选任务</strong><span>左边从“文案、办公、表格、电商、客服、求职、内容”里选一个。</span></div>
+        <div class="step"><b>STEP 02</b><strong>填信息</strong><span>中间只填你知道的。例如产品、对象、语气、输入数据。</span></div>
+        <div class="step"><b>STEP 03</b><strong>复制给 AI</strong><span>点击复制，把右边内容粘贴到你常用的 AI 对话框。</span></div>
+      </div>
+      <div class="shot"><img src="tool_preview.png" alt="AI 办公提效工具箱界面" /><div class="caption">工具箱界面：左侧选任务，中间填写，右侧生成可复制的提示词。</div></div>
+    </section>
+
+    <section class="card">
+      <h2>三个真实例子</h2>
+      <div class="example">
+        <h3>例子 1：写小红书标题</h3>
+        <div class="example-grid">
+          <div class="box"><strong>你这样填</strong>主题：通勤咖啡杯<br>目标读者：上班族女生<br>语气：真诚、轻松、不要广告腔</div>
+          <div class="box"><strong>工具会生成</strong>10 个标题，分为痛点型、反常识型、清单型、身份型、避坑型。</div>
+        </div>
+        <div class="prompt">请扮演一名小红书内容编辑。主题：通勤咖啡杯。目标读者：上班族女生。语气：真诚、轻松、不要广告腔。
+
+请给出10个标题，分类型输出。不要夸大功效，不要编造个人经历，不要使用绝对化承诺。</div>
+      </div>
+      <div class="example">
+        <h3>例子 2：整理周报</h3>
+        <div class="example-grid">
+          <div class="box"><strong>你这样填</strong>本周事项：回访老客户、整理报价单、跟进两个订单<br>结果：完成 8 家回访，新增 2 个意向客户<br>下周计划：继续跟进、整理库存</div>
+          <div class="box"><strong>工具会生成</strong>一份包含“本周完成、关键结果、问题风险、下周计划、需要支持”的周报框架。</div>
+        </div>
+        <div class="note">记住：数字必须是你真实提供的。AI 不应该替你编造结果。</div>
+      </div>
+      <div class="example">
+        <h3>例子 3：问 Excel 公式</h3>
+        <div class="example-grid">
+          <div class="box"><strong>你这样填</strong>软件：WPS<br>结构：A列SKU、B列入库、C列出库<br>目标：按SKU计算当前库存</div>
+          <div class="box"><strong>工具会生成</strong>一段要求 AI 先确认列名、再给公式、解释公式并给验证示例的提示词。</div>
+        </div>
+        <div class="prompt">请帮我写一个Excel公式。软件：WPS。表格结构：A列SKU、B列入库、C列出库。目标：按SKU计算当前库存。请先确认列名和范围，再给公式并解释；不要假设不存在的列。</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>复制之后怎么做</h2>
+      <p><strong>1. 粘贴到 AI：</strong>打开 DeepSeek、豆包、ChatGPT 或通义，把提示词粘贴到对话框发送。</p>
+      <p><strong>2. 看结果：</strong>如果太泛，不要只说“再改改”，直接补充真实信息，例如“客户是餐饮店，客单价20元，想清库存”。</p>
+      <p><strong>3. 自己核对：</strong>AI 的数字、引用、合同条款、客户承诺、专业结论都要人工确认。</p>
+      <div class="note">这个工具不会自动调用 AI，不需要 API Key，也不需要登录。它只负责把“你怎么问”准备好。</div>
+    </section>
+
+    <section class="card">
+      <h2>最常见的四个问题</h2>
+      <h3>1. 为什么结果很空泛？</h3>
+      <p>通常是输入信息太少。补充对象、场景、真实数据、期望格式和例子，重新生成。</p>
+      <h3>2. 为什么没有一键出结果？</h3>
+      <p>因为本工具不绑定第三方 AI 账号，也不需要 API。它生成提示词，你复制到自己的 AI 工具里。</p>
+      <h3>3. 可以粘贴公司资料吗？</h3>
+      <p>先去掉姓名、电话、身份证、银行卡、客户隐私和商业机密。不要把不该外发的信息粘贴到第三方 AI。</p>
+      <h3>4. AI 写错了怎么办？</h3>
+      <p>让它列出信息来源或不确定的地方；重要内容自己查证。AI 不能替代财务、法律、医疗、质量和安全专业判断。</p>
+    </section>
+
+    <section class="card">
+      <h2>7 天上手计划</h2>
+      <ol>
+        <li>第 1 天：用“周报生成”整理一次真实工作。</li>
+        <li>第 2 天：用“小红书标题”生成 10 个版本，再人工挑。</li>
+        <li>第 3 天：用“Excel 公式求助”解决一个实际表格问题。</li>
+        <li>第 4 天：用“客户询价回复”写一条客服话术。</li>
+        <li>第 5 天：用“会议纪要整理”整理一次会议记录。</li>
+        <li>第 6 天：用“简历优化”或“自我介绍”只保留真实经历。</li>
+        <li>第 7 天：留下 3 个最省时间的任务，固定使用。</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>使用前检查</h2>
+      <ul class="checklist">
+        <li>已解压整个文件夹，不只是单独拖动 HTML</li>
+        <li>用 Chrome、Edge 或 Safari 打开</li>
+        <li>选中的是符合当前工作的任务</li>
+        <li>输入里没有敏感隐私</li>
+        <li>复制的是右侧“生成结果”</li>
+        <li>AI 生成后已经人工核对</li>
+      </ul>
+      <div class="note warn">不要把 AI 输出来的内容直接当作事实、合同、财务报表、医疗建议或客户承诺。</div>
+    </section>
+    <div class="footer">AI 办公提效工具箱 · 新手图文教程 · 可打印或另存为 PDF</div>
+  </main>
+</body>
+</html>
